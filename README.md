@@ -7,7 +7,7 @@
 <a href="https://www.youtube.com/watch?v=5kVOYc_DwQc"><img src="https://img.shields.io/static/v1?label=Demo&message=Video&color=orange"></a>
 <a href=""><img src="https://img.shields.io/static/v1?label=Dataset&message=Data&color=yellow"></a>
 <a href="" target='_blank'>
-<img src="https://github.com/kszpxxzmc/ViSAudio/badge?page_id=TODO" />
+<img src="https://visitor-badge.laobi.icu/badge?page_id=https://github.com/kszpxxzmc/ViSAudio" />
 </a>
 </p>
 
