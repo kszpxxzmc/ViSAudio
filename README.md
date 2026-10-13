@@ -26,10 +26,7 @@ pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 \
 pip install -e .
 ```
 
-Video inference and feature extraction require the PE vision encoder. Use the
-pinned source below rather than installing its full dependency set, which
-conflicts with this project's NumPy requirements.
-
+Video inference and feature extraction require the PE vision encoder. 
 ```bash
 git clone https://github.com/facebookresearch/perception_models.git ../perception_models
 export PYTHONPATH="$(realpath ../perception_models)${PYTHONPATH:+:$PYTHONPATH}"
@@ -38,18 +35,6 @@ export PYTHONPATH="$(realpath ../perception_models)${PYTHONPATH:+:$PYTHONPATH}"
 python -c "import core.vision_encoder.pe"
 python -c "import shutil; assert shutil.which('ffmpeg') and shutil.which('ffprobe')"
 ```
-
-Python inference also discovers `../perception_models` automatically. If the
-source is elsewhere, set `PE_ROOT=/path/to/perception_models` before running
-`demo.py` or `demo_batch.py`; this path must contain `core/vision_encoder/pe.py`.
-
-Training on extracted features does not load the visual encoders.
-
-To rebuild the bundled input examples from a local dataset, run
-`python prepare_assets.py --source-root <path-to-data-parent>`.
-The source root must contain `DATA/BiAudio` and `DATA/MUSIC`; it defaults to the
-repository's parent directory. Paths in `assets/input/manifest.json` are relative
-to this source root.
 
 ## Model Weights
 
