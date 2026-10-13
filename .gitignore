@@ -18,6 +18,7 @@
 *.part
 *.log
 events.out.tfevents.*
+*.sh
 
 # Local settings and caches
 .env
