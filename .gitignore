@@ -1,0 +1,44 @@
+# Weights and generated data
+/weights/
+/ext_weights/
+/output/
+/output_*/
+/training/*/feature/
+/training/*/memmap/
+/training/*/energy/
+/training/*/pe/
+/training/*/clip/
+/tests/
+/test_*.py
+/assets/output*/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.part
+*.log
+events.out.tfevents.*
+
+# Local settings and caches
+.env
+.env.*
+!.env.example
+*.local.conf
+.venv/
+venv/
+.vscode/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage*
+.ipynb_checkpoints/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# Existing dataset launchers
+/dataset/*.sh

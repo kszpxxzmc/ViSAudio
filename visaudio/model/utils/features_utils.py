@@ -1,0 +1,203 @@
+from typing import Literal, Optional
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from einops import rearrange
+from torchvision.transforms import Normalize
+
+from visaudio.ext.autoencoder import AutoEncoderModule
+from visaudio.ext.mel_converter import get_mel_converter
+from visaudio.ext.synchformer import Synchformer
+from visaudio.model.utils.distributions import DiagonalGaussianDistribution
+from visaudio.utils.perception import load_perception_encoder
+
+
+def patch_clip(clip_model):
+    # https://github.com/mlfoundations/open_clip/blob/fc5a37b72d705f760ebbc7915b84729816ed471f/src/open_clip/model.py#L269
+    def new_encode_text(self, text, normalize: bool = False):
+        cast_dtype = self.transformer.get_cast_dtype()
+
+        x = self.token_embedding(text).to(cast_dtype)  # [batch_size, n_ctx, d_model]
+
+        x = x + self.positional_embedding.to(cast_dtype)
+        x = self.transformer(x, attn_mask=self.attn_mask)
+        x = self.ln_final(x)  # [batch_size, n_ctx, transformer.width]
+        return F.normalize(x, dim=-1) if normalize else x
+
+    clip_model.encode_text = new_encode_text.__get__(clip_model)
+    return clip_model
+
+
+class FeaturesUtils(nn.Module):
+    def __init__(
+        self,
+        *,
+        tod_vae_ckpt: Optional[str] = None,
+        bigvgan_vocoder_ckpt: Optional[str] = None,
+        synchformer_ckpt: Optional[str] = None,
+        enable_conditions: bool = True,
+        mode: Literal["16k", "44k"] = "44k",
+        need_vae_encoder: bool = True,
+    ):
+        super().__init__()
+
+        if enable_conditions:
+            import open_clip
+            from open_clip import create_model_from_pretrained
+
+            pe = load_perception_encoder()
+            self.clip_model = create_model_from_pretrained(
+                "hf-hub:apple/DFN5B-CLIP-ViT-H-14-384", return_transform=False
+            )
+            self.clip_preprocess = Normalize(
+                mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]
+            )
+            self.clip_model = patch_clip(self.clip_model)
+
+            self.synchformer = Synchformer()
+            self.synchformer.load_state_dict(
+                torch.load(synchformer_ckpt, weights_only=True, map_location="cpu")
+            )
+
+            self.tokenizer = open_clip.get_tokenizer("ViT-H-14-378-quickgelu")  # same as 'ViT-H-14'
+
+            self.pe_model = pe.VisionTransformer.from_config(
+                "PE-Spatial-L14-448", pretrained=True
+            )  # Loads from HF
+
+        else:
+            self.clip_model = None
+            self.synchformer = None
+            self.pe_model = None
+            self.tokenizer = None
+
+        if tod_vae_ckpt is not None:
+            self.mel_converter = get_mel_converter(mode)
+            self.tod = AutoEncoderModule(
+                vae_ckpt_path=tod_vae_ckpt,
+                vocoder_ckpt_path=bigvgan_vocoder_ckpt,
+                mode=mode,
+                need_vae_encoder=need_vae_encoder,
+            )
+        else:
+            self.tod = None
+        self.requires_grad_(False)
+        self.eval()
+
+    def compile(self):
+        if self.clip_model is not None:
+            self.clip_model.encode_image = torch.compile(self.clip_model.encode_image)
+            self.clip_model.encode_text = torch.compile(self.clip_model.encode_text)
+        if self.synchformer is not None:
+            self.synchformer = torch.compile(self.synchformer)
+        if self.pe_model is not None:
+            self.pe_model = torch.compile(self.pe_model)
+        self.decode = torch.compile(self.decode)
+        self.vocode = torch.compile(self.vocode)
+
+    def train(self, mode: bool) -> None:
+        return super().train(False)
+
+    @torch.inference_mode()
+    def encode_video_with_clip(self, x: torch.Tensor, batch_size: int = -1) -> torch.Tensor:
+        assert self.clip_model is not None, "CLIP is not loaded"
+        # x: (B, T, C, H, W) H/W: 384
+        b, t, c, h, w = x.shape
+        assert c == 3 and h == 384 and w == 384
+        x = self.clip_preprocess(x)
+        x = rearrange(x, "b t c h w -> (b t) c h w")
+        outputs = []
+        if batch_size < 0:
+            batch_size = b * t
+        for i in range(0, b * t, batch_size):
+            outputs.append(self.clip_model.encode_image(x[i : i + batch_size], normalize=True))
+        x = torch.cat(outputs, dim=0)
+        x = rearrange(x, "(b t) d -> b t d", b=b)
+        return x
+
+    @torch.inference_mode()
+    def encode_video_with_sync(self, x: torch.Tensor, batch_size: int = -1) -> torch.Tensor:
+        assert self.synchformer is not None, "Synchformer is not loaded"
+        # x: (B, T, C, H, W) H/W: 384
+
+        b, t, c, h, w = x.shape
+        assert c == 3 and h == 224 and w == 224
+
+        segment_size = 16
+        step_size = 8
+        num_segments = (t - segment_size) // step_size + 1
+        segments = []
+        for i in range(num_segments):
+            segments.append(x[:, i * step_size : i * step_size + segment_size])
+        x = torch.stack(segments, dim=1)  # (B, S, T, C, H, W)
+
+        outputs = []
+        if batch_size < 0:
+            batch_size = b
+        x = rearrange(x, "b s t c h w -> (b s) 1 t c h w")
+        for i in range(0, b * num_segments, batch_size):
+            outputs.append(self.synchformer(x[i : i + batch_size]))
+        x = torch.cat(outputs, dim=0)
+        x = rearrange(x, "(b s) 1 t d -> b (s t) d", b=b)
+        return x
+
+    @torch.inference_mode()
+    def encode_video_with_pe(self, x: torch.Tensor, batch_size: int = -1) -> torch.Tensor:
+        assert self.pe_model is not None, "CLIP is not loaded"
+        # x: (B, T, C, H, W) H/W: 384
+        b, t, c, h, w = x.shape
+        assert c == 3 and h == 448 and w == 448
+        x = rearrange(x, "b t c h w -> (b t) c h w")
+        outputs = []
+        if batch_size < 0:
+            batch_size = b * t
+        for i in range(0, b * t, batch_size):
+            pe_video = x[i : i + batch_size]
+            pe_feat = self.pe_model.forward_features(pe_video, strip_cls_token=True)
+            h, w = int(pe_feat.shape[1] ** 0.5), int(pe_feat.shape[1] ** 0.5)
+            assert h * w == pe_feat.shape[1], "PE feature map size error"
+            pe_feat = pe_feat.reshape(pe_feat.shape[0], h, w, pe_feat.shape[2])
+            pe_feat = pe_feat.permute(0, 3, 1, 2)
+            pe_feat_down = F.avg_pool2d(pe_feat, kernel_size=2, stride=2)
+            pe_features = pe_feat_down.permute(0, 2, 3, 1)
+            outputs.append(pe_features)
+
+        x = torch.cat(outputs, dim=0)
+        x = rearrange(x, "(b t) h w c -> b t h w c", b=b)
+        return x
+
+    @torch.inference_mode()
+    def encode_text(self, text: list[str]) -> torch.Tensor:
+        assert self.clip_model is not None, "CLIP is not loaded"
+        assert self.tokenizer is not None, "Tokenizer is not loaded"
+        # x: (B, L)
+        tokens = self.tokenizer(text).to(self.device)
+        return self.clip_model.encode_text(tokens, normalize=True)
+
+    @torch.inference_mode()
+    def encode_audio(self, x) -> DiagonalGaussianDistribution:
+        assert self.tod is not None, "VAE is not loaded"
+        # x: (B * L)
+        mel = self.mel_converter(x)
+        dist = self.tod.encode(mel)
+
+        return dist
+
+    @torch.inference_mode()
+    def vocode(self, mel: torch.Tensor) -> torch.Tensor:
+        assert self.tod is not None, "VAE is not loaded"
+        return self.tod.vocode(mel)
+
+    @torch.inference_mode()
+    def decode(self, z: torch.Tensor) -> torch.Tensor:
+        assert self.tod is not None, "VAE is not loaded"
+        return self.tod.decode(z.transpose(1, 2))
+
+    @property
+    def device(self):
+        return next(self.parameters()).device
+
+    @property
+    def dtype(self):
+        return next(self.parameters()).dtype

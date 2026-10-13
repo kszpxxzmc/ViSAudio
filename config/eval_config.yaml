@@ -1,0 +1,17 @@
+defaults:
+  - base_config
+  - _self_
+
+hydra:
+  run:
+    dir: ./output_eval/${exp_id}
+  output_subdir: eval-${now:%Y-%m-%d_%H-%M-%S}-hydra
+
+exp_id: ${model}
+dataset: BiAudio
+seed: 14159265
+duration_s: 8.0
+model_path: ./weights/visaudio_large_44k.pth
+batch_size: 1
+output_name: visaudio_large_44k
+run_dir: ./output_eval

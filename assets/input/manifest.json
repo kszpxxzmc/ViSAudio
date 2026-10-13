@@ -1,0 +1,128 @@
+[
+  {
+    "name": "dynamic_0B7ds6NmVBQl_60",
+    "dataset": "BiAudio",
+    "original_id": "0B7ds6NmVBQl_60",
+    "source_video": "DATA/BiAudio/video/test/0B7ds6NmVBQl_60.mp4",
+    "caption_source": "DATA/BiAudio/caption/test_valid.tsv",
+    "caption": "Visible sound: Water splashing, likely from a waterfall or stream, Invisible sound: Birds chirping in a natural outdoor setting",
+    "source_sha256": "20992bd6c3bce51b24bb7e531f78115ce621a74b8fe25d02a6ee6a056dc46114"
+  },
+  {
+    "name": "dynamic_I_M0f1c59oc_115",
+    "dataset": "BiAudio",
+    "original_id": "I_M0f1c59oc_115",
+    "source_video": "DATA/BiAudio/video/test/I_M0f1c59oc_115.mp4",
+    "caption_source": "DATA/BiAudio/caption/test_valid.tsv",
+    "caption": "Visible sound: Harp music, Invisible sound: Faint chatter and background music",
+    "source_sha256": "4f2d15b5008d60217385b08fa41317e4146867f8da502e8c4a0d5eaf0f716ce5"
+  },
+  {
+    "name": "dynamic_TKPZf_P5_18_60",
+    "dataset": "BiAudio",
+    "original_id": "TKPZf_P5_18_60",
+    "source_video": "DATA/BiAudio/video/test/TKPZf_P5_18_60.mp4",
+    "caption_source": "DATA/BiAudio/caption/test_valid.tsv",
+    "caption": "Visible sound: Acoustic guitar music, Invisible sound: Dog walking",
+    "source_sha256": "e6f781bde8b44fa2970c53b5c24cf10753ad3e859f4fc7910a31b7c111ef815b"
+  },
+  {
+    "name": "dynamic_Wc_gzO9i38k_463",
+    "dataset": "BiAudio",
+    "original_id": "Wc_gzO9i38k_463",
+    "source_video": "DATA/BiAudio/video/test/Wc_gzO9i38k_463.mp4",
+    "caption_source": "DATA/BiAudio/caption/test_valid.tsv",
+    "caption": "Visible sound: Sitar music, Invisible sound: Birds chirping",
+    "source_sha256": "41a7279b5dd20d584135d925b758976c5ba3e5815c7f704f6ddd125df9a51f03"
+  },
+  {
+    "name": "dynamic_f2kvR5I8s3c_20",
+    "dataset": "BiAudio",
+    "original_id": "f2kvR5I8s3c_20",
+    "source_video": "DATA/BiAudio/video/test/f2kvR5I8s3c_20.mp4",
+    "caption_source": "DATA/BiAudio/caption/test_valid.tsv",
+    "caption": "Visible sound: Water gurgling and trickling, Invisible sound: Motorboat",
+    "source_sha256": "3d6e6997f454d8aae690cf7702d55a5cd53d6b78891c83542556c7494e30d389"
+  },
+  {
+    "name": "fixed_camera_dynamic_obj_tAiVUt5vE34l_80",
+    "dataset": "BiAudio",
+    "original_id": "tAiVUt5vE34l_80",
+    "source_video": "DATA/BiAudio/video/test/tAiVUt5vE34l_80.mp4",
+    "caption_source": "DATA/BiAudio/caption/test_valid.tsv",
+    "caption": "Visible sound: Tractor engine running, Invisible sound: Motor vehicle engine running",
+    "source_sha256": "c71ec1168b651434ca4a2dd5a32d595362f7c0cd909162ecf04de273cff1ac06"
+  },
+  {
+    "name": "fixed_solo1_cello_Lq3671NhNZk_clip_6",
+    "dataset": "MUSIC",
+    "original_id": "solo1_cello_Lq3671NhNZk_clip_6",
+    "source_video": "DATA/MUSIC/video/test/solo1_cello_Lq3671NhNZk_clip_6.mp4",
+    "caption_source": "DATA/MUSIC/caption/test.tsv",
+    "caption": "cello",
+    "source_sha256": "510d1c8ecb6f896d20c9ccd84ecbbcb764b4b822089266c9bd93dadaad9ca434"
+  },
+  {
+    "name": "invisible_9X2wM6HD_og_313",
+    "dataset": "BiAudio",
+    "original_id": "9X2wM6HD_og_313",
+    "source_video": "DATA/BiAudio/video/test/9X2wM6HD_og_313.mp4",
+    "caption_source": "DATA/BiAudio/caption/test_valid.tsv",
+    "caption": "Visible sound: Fireworks, Invisible sound: Firecrackers",
+    "source_sha256": "33a5cecd9e0b95cee36d3ffaeba203aca1795c2fda3b463577c57941417deae6"
+  },
+  {
+    "name": "invisible_eE5oue9yeFQ_354",
+    "dataset": "BiAudio",
+    "original_id": "eE5oue9yeFQ_354",
+    "source_video": "DATA/BiAudio/video/test/eE5oue9yeFQ_354.mp4",
+    "caption_source": "DATA/BiAudio/caption/test_valid.tsv",
+    "caption": "Visible sound: applause, Invisible sound: music",
+    "source_sha256": "327a2ebac646989f25a86fc14c0d59684e019d73a2a4521b9999f97eda42701d"
+  },
+  {
+    "name": "multi_GmtUEtUCX8o_137",
+    "dataset": "BiAudio",
+    "original_id": "GmtUEtUCX8o_137",
+    "source_video": "DATA/BiAudio/video/test/GmtUEtUCX8o_137.mp4",
+    "caption_source": "DATA/BiAudio/caption/test_valid.tsv",
+    "caption": "Visible sound: Firecrackers being set off",
+    "source_sha256": "671218ae111b27c2ae2919634a30037548e6a8ae8987c6981eae1e933ba38200"
+  },
+  {
+    "name": "multi_PuekW6d_0yEl_80",
+    "dataset": "BiAudio",
+    "original_id": "PuekW6d_0yEl_80",
+    "source_video": "DATA/BiAudio/video/test/PuekW6d_0yEl_80.mp4",
+    "caption_source": "DATA/BiAudio/caption/test_valid.tsv",
+    "caption": "Visible sound: Violins played by an orchestra, Invisible sound: Ambient concert hall noise, including audience sounds and other orchestral instruments",
+    "source_sha256": "e0b0f33b155a0b60b732c8f16234de15fb40260f69e527795b09728275956aa7"
+  },
+  {
+    "name": "multi_duet_clarinet_acoustic_guitar_SPXyBDbGt4s_clip_4",
+    "dataset": "MUSIC",
+    "original_id": "duet_clarinet_acoustic_guitar_SPXyBDbGt4s_clip_4",
+    "source_video": "DATA/MUSIC/video/test/duet_clarinet_acoustic_guitar_SPXyBDbGt4s_clip_4.mp4",
+    "caption_source": "DATA/MUSIC/caption/test.tsv",
+    "caption": "acoustic guitar, clarinet",
+    "source_sha256": "621839423ed6308344ce85713432594f89a1b80927e9dc08fd73ea542c7a6c5f"
+  },
+  {
+    "name": "multi_dynamic_530swnPWJrQ_17",
+    "dataset": "BiAudio",
+    "original_id": "530swnPWJrQ_17",
+    "source_video": "DATA/BiAudio/video/test/530swnPWJrQ_17.mp4",
+    "caption_source": "DATA/BiAudio/caption/test_valid.tsv",
+    "caption": "Visible sound: Energetic music played by a band featuring brass instruments, saxophone, and drum set, Invisible sound: Audience cheering and ambient venue noise, such as air conditioning",
+    "source_sha256": "ce3d0f92c5f8d8cb9cca8e8e10853fadcf507399995180411cda040011908db0"
+  },
+  {
+    "name": "multi_solo2_congas_A22AWJ6zFBs_clip_11",
+    "dataset": "MUSIC",
+    "original_id": "solo2_congas_A22AWJ6zFBs_clip_11",
+    "source_video": "DATA/MUSIC/video/test/solo2_congas_A22AWJ6zFBs_clip_11.mp4",
+    "caption_source": "DATA/MUSIC/caption/test.tsv",
+    "caption": "congas",
+    "source_sha256": "05ef46bfdc1d1b40c7aef07dde7da4cb2291f8ba32d66fb22a089c0d8a9eb2ba"
+  }
+]

@@ -1,0 +1,36 @@
+defaults:
+  - base_config
+  - override hydra/job_logging: custom
+  - _self_
+
+hydra:
+  output_subdir: train-${now:%Y-%m-%d_%H-%M-%S}-hydra
+
+train_datasets:
+  BiAudio: 1
+  MUSIC: 3
+val_dataset: MUSIC
+# baseline18 logs use left_loss + right_loss. Set to 1 for the later experiment.
+avg_loss_weight: 0.0
+enable_metrics: false
+save_video_samples: false
+
+log_text_interval: 100
+log_extra_interval: 1000
+val_interval: 1000
+eval_interval: 10000
+save_eval_interval: 10000
+save_weights_interval: 1000
+save_checkpoint_interval: 1000
+save_copy_iterations: [50000]
+
+batch_size: 64
+eval_batch_size: 16
+num_iterations: 50000
+learning_rate: 1.0e-4
+linear_warmup_steps: 1000
+lr_schedule: step
+lr_schedule_steps: [240000, 270000]
+lr_schedule_gamma: 0.1
+clip_grad_norm: 1.0
+weight_decay: 1.0e-6

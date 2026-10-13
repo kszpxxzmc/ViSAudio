@@ -1,0 +1,69 @@
+defaults:
+  - data: base
+  - eval_data: base
+  - override hydra/job_logging: custom-simplest
+  - _self_
+
+hydra:
+  run:
+    dir: ./output/${exp_id}
+  job:
+    chdir: false
+  output_subdir: ${now:%Y-%m-%d_%H-%M-%S}-hydra
+
+model: large_44k_binaural
+exp_id: default
+debug: false
+enable_email: false
+cudnn_benchmark: true
+compile: false
+amp: true
+enable_grad_scaler: false
+seed: 14159265
+num_workers: 4
+pin_memory: false
+
+# checkpoint initializes from MMAudio; weights initializes from ViSAudio.
+# resume restores the full optimizer/scheduler/EMA state.
+checkpoint: ./weights/mmaudio_large_44k_v2.pth
+weights: null
+resume: null
+auto_resume: true
+
+data_dim:
+  latent_dim: 40
+  latent_seq_len: 345
+  clip_seq_len: 64
+  sync_seq_len: 192
+  pe_seq_len: 64
+  text_seq_len: 77
+  clip_dim: 1024
+  sync_dim: 768
+  pe_dim: 1024
+  pe_size: 16
+  text_dim: 1024
+
+ema:
+  enable: true
+  sigma_rels: [0.05, 0.1]
+  update_every: 1
+  checkpoint_every: 1000000
+  checkpoint_save: 10000
+  checkpoint_folder: ${hydra:runtime.output_dir}/ema_ckpts
+  default_output_sigma: 0.1
+  start: 0
+
+sampling:
+  mean: 0.0
+  scale: 1.0
+  min_sigma: 0.0
+  method: euler
+  num_steps: 25
+null_condition_probability: 0.1
+cfg_strength: 4.5
+
+vae_16k_ckpt: ./ext_weights/v1-16.pth
+vae_44k_ckpt: ./ext_weights/v1-44.pth
+bigvgan_vocoder_ckpt: ./ext_weights/best_netG.pt
+synchformer_ckpt: ./ext_weights/synchformer_state_dict.pth
+empty_string_ckpt: ./ext_weights/empty_string.pth

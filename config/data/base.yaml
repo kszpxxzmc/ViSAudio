@@ -1,0 +1,28 @@
+BiAudio_test:
+  root: ../DATA/BiAudio/video/test
+MUSIC_test:
+  root: ../DATA/MUSIC/video/test
+
+Extracted_BiAudio_train:
+  tsv: ./training/BiAudio/feature/BiAudio-train.tsv
+  memmap_dir: ./training/BiAudio/feature/train
+  stats_path: ./training/BiAudio/feature/train_stats.pt
+Extracted_BiAudio_test:
+  tsv: ./training/BiAudio/feature/BiAudio-test.tsv
+  memmap_dir: ./training/BiAudio/feature/test
+Extracted_MUSIC_train:
+  tsv: ./training/MUSIC/feature/MUSIC-train.tsv
+  memmap_dir: ./training/MUSIC/feature/train
+  stats_path: ./training/MUSIC/feature/train_stats.pt
+Extracted_MUSIC_test:
+  tsv: ./training/MUSIC/feature/MUSIC-test.tsv
+  memmap_dir: ./training/MUSIC/feature/test
+
+Extracted_BiAudio_val:
+  tag: val
+  gt_cache: ../DATA/BiAudio/gt_cache/test
+  output_subdir: val
+Extracted_MUSIC_val:
+  tag: val
+  gt_cache: ../DATA/MUSIC/gt_cache/test
+  output_subdir: val
